@@ -18,6 +18,9 @@ import llm_client
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # RAGAS imports
 try:
     from ragas import SingleTurnSample
@@ -42,17 +45,20 @@ def discover_chroma_backends() -> Dict[str, Dict[str, str]]:
 def initialize_rag_system(chroma_dir: str, collection_name: str):
     """Initialize the RAG system with specified backend (cached for performance)"""
 
-    try:
-       return rag_client.initialize_rag_system(chroma_dir, collection_name)
-    except Exception as e:
-        return None, False, str(e)
+    return rag_client.initialize_rag_system(
+        chroma_dir,
+        collection_name
+    )
 
 def retrieve_documents(collection, query: str, n_results: int = 3, 
                       mission_filter: Optional[str] = None) -> Optional[Dict]:
     """Retrieve relevant documents from ChromaDB with optional filtering"""
+    print("OPENAI_API_KEY EXISTS:", bool(os.getenv("OPENAI_API_KEY")))
     try:
         return rag_client.retrieve_documents(collection, query, n_results, mission_filter)
     except Exception as e:
+        print("RETRIEVAL ERROR:")
+        print(repr(e))
         st.error(f"Error retrieving documents: {e}")
         return None
 
@@ -156,12 +162,13 @@ def main():
             st.warning("Please enter your OpenAI API key")
             st.stop()
         else:
-            os.environ["CHROMA_OPENAI_API_KEY"] = openai_key
+            os.environ["OPENAI_API_KEY"] = openai_key
+
         
         # Model selection
         model_choice = st.selectbox(
             "OpenAI Model",
-            options=["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo-preview"],
+            options=["gpt-4o-mini", "gpt-4o"],
             help="Choose the OpenAI model for responses"
         )
         
@@ -177,19 +184,22 @@ def main():
         if (st.session_state.current_backend != selected_backend_key):
             st.session_state.current_backend = selected_backend_key
             # Clear cache to force reinitialization
-            st.cache_resource.clear()
+            #st.cache_resource.clear()
     
     # Initialize RAG system
     with st.spinner("Initializing RAG system..."):
 
-        collection, success, error = initialize_rag_system(
-            selected_backend["directory"], 
-            selected_backend["collection_name"]
-        )
-    
-    if not success:
-        st.error(f"Failed to initialize RAG system: {error}")
-        st.stop()
+        try:
+
+            collection = initialize_rag_system(
+                selected_backend["directory"],
+                selected_backend["collection_name"]
+            )
+
+        except Exception as e:
+
+            st.error(f"Failed to initialize RAG system: {e}")
+            st.stop()
     
     # Display evaluation metrics if available
     if st.session_state.last_evaluation and enable_evaluation:
@@ -210,17 +220,42 @@ def main():
         # Generate assistant response
         with st.chat_message("assistant"):
             with st.spinner("Searching documents and generating response..."):
+                print("BEFORE RETRIEVE")
                 # Retrieve relevant documents
-                docs_result = retrieve_documents(
-                    collection, 
-                    prompt, 
+                import rag_client
+
+                print("CALLING RAG CLIENT DIRECTLY")
+
+                docs_result = rag_client.retrieve_documents(
+                    collection,
+                    prompt,
                     n_docs
                 )
-                
+
+                print("DIRECT CALL RETURNED")
+                print("AFTER RETRIEVE")
+                print("TYPE:", type(docs_result))
+
+                if docs_result:
+                    print("KEYS:", docs_result.keys())
+
                 # Format context
                 context = ""
                 contexts_list = []
+                
+                print("DOCS_RESULT IS:")
+                print(docs_result)
+
                 if docs_result and docs_result.get("documents"):
+                    print("\nDOCS_RESULT KEYS:")
+                    print(docs_result.keys())
+
+                    print("\nDOCUMENTS:")
+                    print(docs_result.get("documents"))
+
+                    print("\nMETADATAS:")
+                    print(docs_result.get("metadatas"))
+
                     context = format_context(docs_result["documents"][0], docs_result["metadatas"][0])
                     contexts_list = docs_result["documents"][0]
                     st.session_state.last_contexts = contexts_list
@@ -238,6 +273,25 @@ def main():
                 # Evaluate response quality if enabled
                 if enable_evaluation and RAGAS_AVAILABLE:
                     with st.spinner("Evaluating response quality..."):
+                        
+                        print("\n" + "="*60)
+                        print("RAGAS DEBUG")
+                        print("="*60)
+
+                        print("QUESTION:")
+                        print(prompt)
+
+                        print("\nANSWER:")
+                        print(response[:500])
+
+                        print("\nNUMBER OF CONTEXTS:")
+                        print(len(contexts_list))
+
+                        for i, ctx in enumerate(contexts_list):
+                            print(f"\nCONTEXT {i+1}:")
+                            print(ctx[:300])
+                            print("-"*50)
+                        
                         evaluation_scores = evaluate_response_quality(
                             prompt, 
                             response, 

@@ -3,6 +3,7 @@ from ragas.embeddings import LangchainEmbeddingsWrapper
 from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
 from typing import Dict, List, Optional
+import os
 
 # RAGAS imports
 try:
@@ -18,10 +19,73 @@ def evaluate_response_quality(question: str, answer: str, contexts: List[str]) -
     if not RAGAS_AVAILABLE:
         return {"error": "RAGAS not available"}
     
-    # TODO: Create evaluator LLM with model gpt-3.5-turbo
-    # TODO: Create evaluator_embeddings with model test-embedding-3-small
-    # TODO: Define an instance for each metric to evaluate
-    # TODO: Evaluate the response using the metrics
-    # TODO: Return the evaluation results
+    try:
+
+        # Create evaluator LLM
+        evaluator_llm = LangchainLLMWrapper(
+            ChatOpenAI(
+                model="gpt-4o-mini",
+                temperature=0,
+                api_key=os.getenv("OPENAI_API_KEY"),
+                base_url="https://openai.vocareum.com/v1"
+            )
+        )
+
+        # Create evaluator embeddings
+        evaluator_embeddings = LangchainEmbeddingsWrapper(
+            OpenAIEmbeddings(
+                model="text-embedding-3-small",
+                api_key=os.getenv("OPENAI_API_KEY"),
+                base_url="https://openai.vocareum.com/v1"
+            )
+        )
+
+        # Define metrics
+        faithfulness_metric = Faithfulness(
+            llm=evaluator_llm
+        )
+
+        relevancy_metric = ResponseRelevancy(
+            llm=evaluator_llm,
+            embeddings=evaluator_embeddings
+        )
+
+        #bleu_metric = BleuScore()
+
+        #rouge_metric = RougeScore()
+
+        # Create sample
+        sample = SingleTurnSample(
+            user_input=question,
+            response=answer,
+            retrieved_contexts=contexts
+        )
+
+        # Evaluate
+        results = {}
+
+        results["faithfulness"] = faithfulness_metric.single_turn_score(
+            sample
+        )
+
+        results["response_relevancy"] = relevancy_metric.single_turn_score(
+            sample
+        )
+
+        #results["bleu"] = bleu_metric.single_turn_score(
+        #    sample
+        #)
+
+        #results["rouge"] = rouge_metric.single_turn_score(
+        #    sample
+        #)
+
+        return results
+
+    except Exception as e:
+
+        return {
+            "error": str(e)
+        }
 
     pass

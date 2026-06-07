@@ -1,0 +1,17 @@
+Question: What was the primary objective of Apollo 11?
+Expected Answer: Apollo 11's primary objective was to land humans on the Moon and safely return them to Earth.
+
+Question: Who were the crew members of Apollo 11?
+Expected Answer: Neil Armstrong, Buzz Aldrin, and Michael Collins.
+
+Question: What emergency occurred during Apollo 13?
+Expected Answer: An oxygen tank explosion caused major system failures and forced the crew to abort the lunar landing.
+
+Question: What role did Mission Control play during Apollo 13?
+Expected Answer: Mission Control coordinated emergency procedures and developed solutions that helped bring the crew safely back to Earth.
+
+Question: What factors contributed to the Challenger disaster?
+Expected Answer: Challenger was lost after O-ring failure in a solid rocket booster during cold launch conditions.
+
+Question: What communication systems were used during Apollo missions?
+Expected Answer: Apollo missions relied on radio communications between the spacecraft, Mission Control, and NASA tracking stations.
