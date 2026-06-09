@@ -1,0 +1,116 @@
+================================================================================
+NASA RAG EVALUATION DEMO
+================================================================================
+
+Collection loaded
+Documents: 15563
+
+================================================================================
+QUESTION 1
+================================================================================
+What was the primary objective of Apollo 11?
+
+Retrieved Documents: 3
+
+ANSWER:
+The primary objective of Apollo 11 was to perform a manned lunar landing and return safely to Earth. This mission also included 11 secondary objectives related to selenological inspection and sampling, as well as assessing the capabilities and limitations of humans and their equipment in the lunar environment (Source 1).
+
+RAGAS SCORES:
+faithfulness: 0.8571428571428571
+response_relevancy: 0.9828640584720588
+
+================================================================================
+QUESTION 2
+================================================================================
+Who were the crew members of Apollo 11?
+
+Retrieved Documents: 3
+
+ANSWER:
+The crew members of Apollo 11 were:
+
+- Neil A. Armstrong, Commander
+- Michael Collins, Command Module Pilot
+- Edwin E. Aldrin, Jr., Lunar Module Pilot
+
+(Source: Apollo 11 Technical Report, Document: 19900066485_textract_full_text)
+
+RAGAS SCORES:
+faithfulness: 1.0
+response_relevancy: 1.0
+
+================================================================================
+QUESTION 3
+================================================================================
+What emergency occurred during Apollo 13?
+
+Retrieved Documents: 3
+
+ANSWER:
+During Apollo 13, an emergency occurred when an oxygen tank in the service module exploded. This incident led to a loss of oxygen and power, jeopardizing the mission and the safety of the crew. The crew had to use the lunar module as alifeboat to return to Earth. The mission ultimately required significant problem-solving and resourcefulness from both the astronauts and mission control to ensure a safe return.
+
+RAGAS SCORES:
+faithfulness: 0.6666666666666666
+response_relevancy: 0.8613809101043017
+
+================================================================================
+QUESTION 4
+================================================================================
+What role did Mission Control play during Apollo 13?
+
+Retrieved Documents: 3
+
+ANSWER:
+During Apollo 13, Mission Control played a critical role in managing the flight and ensuring the safety of the crew. The flight control team, led by Gene Krantz, was responsible for monitoring the spacecraft's systems and trajectory. They provided real-time communication and support to the astronauts, coordinating their actions and troubleshooting issues as they arose. For instance, Joe Kerwin served as the Capsule Communicator, maintaining direct communication with the crew. Mission Control was essential in executing the mission plan and responding to the emergency that occurred during the flight. 
+
+(Source: Apollo 13, AS13_PAO_textract_full_text)
+
+RAGAS SCORES:
+faithfulness: 0.46153846153846156
+response_relevancy: 0.9999999999999997
+
+================================================================================
+QUESTION 5
+================================================================================
+What factors contributed to the Challenger disaster?
+
+Retrieved Documents: 3
+
+ANSWER:
+The provided NASA mission context does not contain information regarding the factors that contributed to the Challenger disaster. Therefore, I cannot provide an answer based on the available data.
+
+RAGAS SCORES:
+faithfulness: 1.0
+response_relevancy: 0.0
+
+================================================================================
+QUESTION 6
+================================================================================
+What communication systems were used during Apollo missions?
+
+Retrieved Documents: 3
+
+ANSWER:
+During the Apollo missions, specifically Apollo 11, the communication systems included:
+
+1. **S-band Communications System**: This system provided good-quality voice communication and was used for command module and lunar module up-data links. It also facilitated excellent real-time and playback telemetry performance.
+
+2. **VHF (Very High Frequency) Link**: This was used for communication between the lunar module and the crew during extravehicular activities. The lunar module's VHF transmitter relayed crew voice and data to Earth.
+
+3. **Television Transmission**: Color television pictures of high quality were transmitted from the command module, while good-quality black-and-white television pictures were received and converted during lunar surface operations.
+
+These systems were generally consistent with those used in previous flights, as noted in the Apollo 11 mission documentation (NASA_NTRS_Archive_19710015566).
+
+RAGAS SCORES:
+faithfulness: 0.75
+response_relevancy: 0.9028218853215821
+
+================================================================================
+AVERAGE PERFORMANCE
+================================================================================
+Average Faithfulness: 0.7892
+Average Response Relevancy: 0.7912
+
+================================================================================
+EVALUATION COMPLETE
+================================================================================

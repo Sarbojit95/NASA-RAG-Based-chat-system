@@ -53,7 +53,6 @@ def initialize_rag_system(chroma_dir: str, collection_name: str):
 def retrieve_documents(collection, query: str, n_results: int = 3, 
                       mission_filter: Optional[str] = None) -> Optional[Dict]:
     """Retrieve relevant documents from ChromaDB with optional filtering"""
-    print("OPENAI_API_KEY EXISTS:", bool(os.getenv("OPENAI_API_KEY")))
     try:
         return rag_client.retrieve_documents(collection, query, n_results, mission_filter)
     except Exception as e:
@@ -184,7 +183,7 @@ def main():
         if (st.session_state.current_backend != selected_backend_key):
             st.session_state.current_backend = selected_backend_key
             # Clear cache to force reinitialization
-            #st.cache_resource.clear()
+            st.cache_resource.clear()
     
     # Initialize RAG system
     with st.spinner("Initializing RAG system..."):
@@ -220,11 +219,10 @@ def main():
         # Generate assistant response
         with st.chat_message("assistant"):
             with st.spinner("Searching documents and generating response..."):
-                print("BEFORE RETRIEVE")
+        
                 # Retrieve relevant documents
                 import rag_client
 
-                print("CALLING RAG CLIENT DIRECTLY")
 
                 docs_result = rag_client.retrieve_documents(
                     collection,
@@ -232,29 +230,13 @@ def main():
                     n_docs
                 )
 
-                print("DIRECT CALL RETURNED")
-                print("AFTER RETRIEVE")
-                print("TYPE:", type(docs_result))
-
-                if docs_result:
-                    print("KEYS:", docs_result.keys())
 
                 # Format context
                 context = ""
                 contexts_list = []
                 
-                print("DOCS_RESULT IS:")
-                print(docs_result)
 
                 if docs_result and docs_result.get("documents"):
-                    print("\nDOCS_RESULT KEYS:")
-                    print(docs_result.keys())
-
-                    print("\nDOCUMENTS:")
-                    print(docs_result.get("documents"))
-
-                    print("\nMETADATAS:")
-                    print(docs_result.get("metadatas"))
 
                     context = format_context(docs_result["documents"][0], docs_result["metadatas"][0])
                     contexts_list = docs_result["documents"][0]
@@ -273,24 +255,6 @@ def main():
                 # Evaluate response quality if enabled
                 if enable_evaluation and RAGAS_AVAILABLE:
                     with st.spinner("Evaluating response quality..."):
-                        
-                        print("\n" + "="*60)
-                        print("RAGAS DEBUG")
-                        print("="*60)
-
-                        print("QUESTION:")
-                        print(prompt)
-
-                        print("\nANSWER:")
-                        print(response[:500])
-
-                        print("\nNUMBER OF CONTEXTS:")
-                        print(len(contexts_list))
-
-                        for i, ctx in enumerate(contexts_list):
-                            print(f"\nCONTEXT {i+1}:")
-                            print(ctx[:300])
-                            print("-"*50)
                         
                         evaluation_scores = evaluate_response_quality(
                             prompt, 

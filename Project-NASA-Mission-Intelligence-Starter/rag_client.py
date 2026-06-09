@@ -1,3 +1,4 @@
+from random import sample
 from xmlrpc import client
 import chromadb
 from chromadb.config import Settings
@@ -78,37 +79,30 @@ def retrieve_documents(
     query: str,
     n_results: int = 3,
     mission_filter: Optional[str] = None
-) -> Optional[Dict]:
-
-    where_filter = None
-
-    if mission_filter and mission_filter.lower() != "all":
-        where_filter = {"mission": mission_filter}
-
-    
+):
 
     client = OpenAI(
         base_url="https://openai.vocareum.com/v1",
         api_key=os.getenv("OPENAI_API_KEY")
     )
 
-
     response = client.embeddings.create(
         model="text-embedding-3-small",
         input=query
     )
 
-
-    query_embedding = response.data[0].embedding
-
+    query_embedding = list(
+        map(float, response.data[0].embedding)
+    )
 
     results = collection.query(
-    query_embeddings=[query_embedding],
-    n_results=n_results
+        query_embeddings=[query_embedding],
+        n_results=n_results
     )
-    
 
-    return results
+    return results    
+
+    
 
 def format_context(documents: List[str], metadatas: List[Dict]) -> str:
     """Format retrieved documents into context"""
